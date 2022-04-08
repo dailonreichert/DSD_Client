@@ -12,25 +12,29 @@ import javax.swing.JOptionPane;
 public class Client {
 
     public static void main(String[] args) throws InterruptedException {
-        int option = messageOption();
-        
-        switch (option) {
-            case 0: 
-                list(); 
-                break;
-            case 1: 
-                insert();  
-                break;
-            case 2: 
-                update();  
-                break;
-            case 3: 
-                delete(); 
-                break;
-            case 4: 
-                get(); 
-                break;
-        }
+        int option = 0;
+
+        do {
+            option = messageOption();
+
+            switch (option) {
+                case 0: 
+                    list(); 
+                    break;
+                case 1: 
+                    insert();  
+                    break;
+                case 2: 
+                    update();  
+                    break;
+                case 3: 
+                    delete(); 
+                    break;
+                case 4: 
+                    get(); 
+                    break;
+            }
+        } while (option != 5);
     }
 
     private static int messageOption(){
@@ -92,12 +96,12 @@ public class Client {
 
     private static void get() throws InterruptedException{
         String cpf = JOptionPane.showInputDialog("Digite o CPF:");
-        
+
         String[] request = {"GET" + ";" + cpf};
 
         callConection(request);
     }
-    
+
     private static void callConection(String[] sentensa) throws InterruptedException{
         try {
             Socket cliente = new Socket("10.15.120.59", 80);
