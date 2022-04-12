@@ -13,90 +13,97 @@ import javax.swing.JOptionPane;
 public class Client {
 
     public static void main(String[] args) throws InterruptedException {
-        int option = 0;
-        
-        JOptionPane.showMessageDialog(null, "Teste");
+        int acao = 0;
 
         do {
-            int optionClass = messageOptionClass();
+            int classe = getMensagemEscolhaClasse();
 
-            option = messageOption();
+            acao = getMensagemAcao();
 
-            switch (option) {
+            switch (acao) {
                 case 0: 
-                    list(optionClass); 
+                    list(classe); 
                     break;
                 case 1: 
-                    insert(optionClass);  
+                    insert(classe);  
                     break;
                 case 2: 
-                    update(optionClass);  
+                    update(classe);  
                     break;
                 case 3: 
-                    delete(optionClass); 
+                    delete(classe); 
                     break;
                 case 4: 
-                    get(optionClass); 
+                    get(classe); 
                     break;
             }
-        } while (!(option == 5 || option == -1));
+        } while (!(acao == 5 || acao == -1));
     }
 
-    private static int messageOptionClass(){
+    private static int getMensagemEscolhaClasse(){
         String[] choices = {"Pessoa", "Turma"};
 
         return JOptionPane.showOptionDialog(null, "Deseja dar manutencao em qual classe:", "", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, "Botao 3");
     }
 
-    private static int messageOption(){
+    private static int getMensagemAcao(){
         String[] choices = {"Consultar todos", "Incluir", "Alterar", "Excluir", "viszualizar", "Sair"};
 
         return JOptionPane.showOptionDialog(null, "Escolha uma das opções:", "Manutenção de Pessoas", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, "Botao 3");
     }
 
-    private static void list(int optionClass) throws InterruptedException{
-        String[] request = {"LIST" + optionClass};
+    private static void list(int classe) throws InterruptedException{
+        String[] request = {"LIST" + classe};
 
         callConection(request);
     }
 
-    private static void insert(int optionClass) throws InterruptedException{
-        if(optionClass == 0){
-            String cpf      = JOptionPane.showInputDialog("Digite o CPF:");
-            String nome     = JOptionPane.showInputDialog("Digite o Nome:");
-            String endereco = JOptionPane.showInputDialog("Digite o Endereço:");
-
-            String[] opTipoPessoa = {"Professor", "Aluno"};
-
-            int tipoPessoa = JOptionPane.showOptionDialog(null, "A pessoa a ser incluida e um:", "Manutenção de Pessoas", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opTipoPessoa, "Botao 3");
-
-            if(tipoPessoa == 0){
-                String[] opGraduacao = {"Graduacao", "Mestrado", "Doutorado"};
-
-                int nivelGraduacao = JOptionPane.showOptionDialog(null, "Nivel de graduacao do Professor:", "Professor", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opGraduacao, "Botao 3");
-                
-                String[] request = {"INSERT" + ";" + optionClass +  ";" + cpf + ";" + nome + ";" + endereco + ";" + tipoPessoa + ";" + nivelGraduacao};
-
-                callConection(request);
-            }
-            else if(tipoPessoa == 1){
-                int matricula = Integer.parseInt(JOptionPane.showInputDialog("Digite a Matricula:"));
-                
-                String[] request = {"INSERT" + ";" + optionClass +  ";" + cpf + ";" + nome + ";" + endereco + ";" + tipoPessoa + ";" + matricula};
-
-                callConection(request);
-            }
-            
+    private static void insert(int classe) throws InterruptedException{
+        //Se for a classe Pessoa
+        if(classe == 0){
+            inserePessoa();
         }
-        else if(optionClass == 1){
-            String descricao        = JOptionPane.showInputDialog("Descricao:");
-            String quantidadeAlunos = JOptionPane.showInputDialog("Quantidade de Alunos:");
-            String ano              = JOptionPane.showInputDialog("Ano:");
+        //Se for a classe turma
+        else if(classe == 1){
+            insereTurma();
+        }
+    }
+    
+    private static void inserePessoa() throws InterruptedException{
+        String cpf      = JOptionPane.showInputDialog("Digite o CPF:");
+        String nome     = JOptionPane.showInputDialog("Digite o Nome:");
+        String endereco = JOptionPane.showInputDialog("Digite o Endereço:");
 
-            String[] request = {"INSERT" + ";" + optionClass + ";" + descricao + ";" + quantidadeAlunos + ";" + ano};
- 
+        String[] opTipoPessoa = {"Professor", "Aluno"};
+
+        int tipoPessoa = JOptionPane.showOptionDialog(null, "A pessoa a ser incluida e um:", "Manutenção de Pessoas", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opTipoPessoa, "Botao 3");
+
+        if(tipoPessoa == 0){
+            String[] opGraduacao = {"Graduacao", "Mestrado", "Doutorado"};
+
+            int nivelGraduacao = JOptionPane.showOptionDialog(null, "Nivel de graduacao do Professor:", "Professor", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opGraduacao, "Botao 3");
+
+            String[] request = {"INSERT" + ";" + "0" +  ";" + cpf + ";" + nome + ";" + endereco + ";" + tipoPessoa + ";" + nivelGraduacao};
+
             callConection(request);
         }
+        else if(tipoPessoa == 1){
+            int matricula = Integer.parseInt(JOptionPane.showInputDialog("Digite a Matricula:"));
+
+            String[] request = {"INSERT" + ";" + "0" +  ";" + cpf + ";" + nome + ";" + endereco + ";" + tipoPessoa + ";" + matricula};
+
+            callConection(request);
+        }
+    }
+    
+    private static void insereTurma() throws InterruptedException{
+        String descricao        = JOptionPane.showInputDialog("Descricao:");
+        String quantidadeAlunos = JOptionPane.showInputDialog("Quantidade de Alunos:");
+        String ano              = JOptionPane.showInputDialog("Ano:");
+
+        String[] request = {"INSERT" + ";" + "1" + ";" + descricao + ";" + quantidadeAlunos + ";" + ano};
+
+        callConection(request);
     }
   
     private static void update(int optionClass) throws InterruptedException{
