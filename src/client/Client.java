@@ -1,8 +1,8 @@
 package client;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
@@ -61,12 +61,12 @@ public class Client {
 
     private static void list(int classe) throws InterruptedException{
         if(classe == 0){
-            String[] request = {"LIST" + CLASSE_PESSOA};
+            String request = "LIST" + ";" +CLASSE_PESSOA;
 
             callConection(request);
         }
         else if(classe == 1){
-            String[] request = {"LIST" + CLASSE_TURMA};
+            String request = "LIST" + ";" + CLASSE_TURMA;
 
             callConection(request);
         }
@@ -98,14 +98,14 @@ public class Client {
 
             int nivelGraduacao = JOptionPane.showOptionDialog(null, "Nivel de graduacao do Professor:", "Professor", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opGraduacao, null);
 
-            String[] request = {"INSERT" + ";" + CLASSE_PESSOA + ";" +  ";" + cpf + ";" + nome + ";" + endereco + ";" + TIPO_PESSOA_PROFESSOR + ";" + nivelGraduacao + ";" + turma};
+            String request = "INSERT" + ";" + CLASSE_PESSOA + ";" +  ";" + cpf + ";" + nome + ";" + endereco + ";" + TIPO_PESSOA_PROFESSOR + ";" + nivelGraduacao + ";" + turma;
 
             callConection(request);
         }
         else if(tipoPessoa == 1){
             int matricula = Integer.parseInt(JOptionPane.showInputDialog("Digite a Matricula:"));
 
-            String[] request = {"INSERT" + ";" + CLASSE_PESSOA + ";" +  ";" + cpf + ";" + nome + ";" + endereco + ";" + TIPO_PESSOA_ALUNO + ";" + matricula + ";" + turma};
+            String request = "INSERT" + ";" + CLASSE_PESSOA + ";" + cpf + ";" + nome + ";" + endereco + ";" + TIPO_PESSOA_ALUNO + ";" + matricula + ";" + turma;
 
             callConection(request);
         }
@@ -116,7 +116,7 @@ public class Client {
         String quantidadeAlunos = JOptionPane.showInputDialog("Quantidade de Alunos:");
         String ano              = JOptionPane.showInputDialog("Ano:");
 
-        String[] request = {"INSERT" + ";" + CLASSE_TURMA + ";" + descricao + ";" + quantidadeAlunos + ";" + ano};
+        String request = "INSERT" + ";" + CLASSE_TURMA + ";" + descricao + ";" + quantidadeAlunos + ";" + ano;
 
         callConection(request);
     }
@@ -127,7 +127,7 @@ public class Client {
             String nome     = JOptionPane.showInputDialog("Digite o novo Nome:");
             String endereco = JOptionPane.showInputDialog("Digite o novo Endereço:");
 
-            String[] request = {"UPDATE" + ";" + CLASSE_PESSOA + ";" + cpf + ";" + nome + ";" + endereco};
+            String request = "UPDATE" + ";" + CLASSE_PESSOA + ";" + cpf + ";" + nome + ";" + endereco;
 
             callConection(request);
         }
@@ -137,7 +137,7 @@ public class Client {
             String qtdAlunos = JOptionPane.showInputDialog("Digite a nova quantidade de Alunos:");
             String ano       = JOptionPane.showInputDialog("Digite o novo ano da Turma:");
 
-            String[] request = {"UPDATE" + ";" + CLASSE_TURMA + ";" + turma + ";" + descricao + ";" + qtdAlunos + ";" + ano};
+            String request = "UPDATE" + ";" + CLASSE_TURMA + ";" + turma + ";" + descricao + ";" + qtdAlunos + ";" + ano;
 
             callConection(request);
         }
@@ -147,14 +147,14 @@ public class Client {
         if(classe == 0){
             String cpf = JOptionPane.showInputDialog("Digite o CPF:");
 
-            String[] request = {"DELETE" + ";" + CLASSE_PESSOA + ";" + cpf};
+            String request = "DELETE" + ";" + CLASSE_PESSOA + ";" + cpf;
             
             callConection(request);
         }
         else if(classe == 1){
             String turma = JOptionPane.showInputDialog("Digite o codigo da turma:");
 
-            String[] request = {"DELETE" + ";" + CLASSE_TURMA + ";" + turma};
+            String request = "DELETE" + ";" + CLASSE_TURMA + ";" + turma;
 
             callConection(request);
         }
@@ -164,32 +164,27 @@ public class Client {
         if(classe == 0){
             String cpf = JOptionPane.showInputDialog("Digite o CPF:");
 
-            String[] request = {"GET" + ";" + CLASSE_PESSOA + ";" + cpf};
+            String request = "GET" + ";" + CLASSE_PESSOA + ";" + cpf;
 
             callConection(request);
         }
         else if(classe == 1){
             String turma = JOptionPane.showInputDialog("Digite o codigo da turma:");
 
-            String[] request = {"GET" + ";" + CLASSE_TURMA + ";" + turma};
+            String request = "GET" + ";" + CLASSE_TURMA + ";" + turma;
 
             callConection(request);
         }
     }
 
-    private static void callConection(String[] sentensa) throws InterruptedException{
+    private static void callConection(String sentensa) throws InterruptedException{
         try {
-            Socket cliente = new Socket("10.15.120.59", 80);
+            Socket cliente = new Socket("10.15.120.64", 90);
 
-            ObjectOutputStream output = new ObjectOutputStream(cliente.getOutputStream());
-
-            for (int i = 0; i < sentensa.length; i++) {
-                Thread.sleep(1000);
-                output.write(sentensa[i].getBytes());
-            }
+            DataOutputStream output = new DataOutputStream(cliente.getOutputStream());
+            output.writeUTF(sentensa);
 
             output.flush();
-            output.close();
             
             InputStream in = cliente.getInputStream();
 
@@ -199,8 +194,9 @@ public class Client {
 
             while (qtdBytesLidos >= 0) { // enquanto bytes forem lidos...
                 String dadosStr = new String(dadosBrutos, 0, qtdBytesLidos);
-                System.out.println(dadosStr);
-                //JOptionPane.showMessageDialog(parentComponent, cliente);
+
+                JOptionPane.showMessageDialog(null, dadosStr);
+                
                 qtdBytesLidos = in.read(dadosBrutos);
             }
         } catch (IOException e) {
