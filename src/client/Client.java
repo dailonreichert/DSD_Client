@@ -1,9 +1,5 @@
 package client;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
 import javax.swing.JOptionPane;
 
 /**
@@ -11,196 +7,134 @@ import javax.swing.JOptionPane;
  * @author Dailon
  */
 public class Client {
-    
-    final static String CLASSE_PESSOA = "1";
-    final static String CLASSE_TURMA  = "2";
 
-    final static String TIPO_PESSOA_PROFESSOR = "1";
-    final static String TIPO_PESSOA_ALUNO     = "2";
-    
+    final static int BOTAO_FECHAR = -1;
 
-    public static void main(String[] args) throws InterruptedException {
-        int acao = 0;
+    final static int CLASSE_PROFESSOR      = 0;
+    final static int CLASSE_ALUNO          = 1;
+    final static int CLASSE_TURMA          = 2;
+    final static int CLASSE_TURMA_ALUNO    = 3;
+    final static int CLASSE_TURMA_PRFESSOR = 4;
 
-        do {
-            int classe = getMensagemEscolhaClasse();
+    final static String _CLASSE_PESSOA         = "Pessoa";
+    final static String _CLASSE_PROFESSOR      = "Professor";
+    final static String _CLASSE_ALUNO          = "Aluno";
+    final static String _CLASSE_TURMA          = "Turma";
+    final static String _CLASSE_TURMA_ALUNO    = "Turma X Aluno";
+    final static String _CLASSE_TURMA_PRFESSOR = "Turma X Professor";
 
-            acao = getMensagemAcao();
+    final static String[] CLASSES = {_CLASSE_PROFESSOR, _CLASSE_ALUNO, _CLASSE_TURMA, _CLASSE_TURMA_ALUNO, _CLASSE_TURMA_PRFESSOR};
 
-            switch (acao) {
-                case 1: 
-                    list(classe); 
-                    break;
-                case 2: 
-                    get(classe);
-                    break;
-                case 3: 
-                    delete(classe);  
-                    break;
-                case 4: 
-                    update(classe); 
-                    break;
-                case 5: 
-                    insert(classe); 
-                    break;
-            }
-        } while (!(acao == 0 || acao == -1));
-    }
+    final static int ACAO_VOLTAR          = 0;
+    final static int ACAO_CONSULTAR_TODOS = 1;
+    final static int ACAO_VISUALIZAR      = 2;
+    final static int ACAO_EXCLUIR         = 3;
+    final static int ACAO_ALTERAR         = 4;
+    final static int ACAO_INCLUIR         = 5;
+
+    final static String[] ACOES = {"Voltar", "Consultar todos", "Visualizar", "Excluir", "Alterar", "Incluir"};
+
+    final static String[] NIVEL_GRADUACAO = {"Gradudo", "Mestre", "Doutor"};
 
     private static int getMensagemEscolhaClasse(){
-        String[] choices = {"Pessoa", "Turma"};
-
-        return JOptionPane.showOptionDialog(null, "Deseja dar manutencao em qual classe:", "", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
+        return JOptionPane.showOptionDialog(null, "Deseja dar manutenção em qual classe:", "", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, CLASSES, null);
     }
 
     private static int getMensagemAcao(){
-        String[] choices = {"Sair", "Consultar todos", "visualizar", "Excluir", "Alterar", "Incluir"};
-
-        return JOptionPane.showOptionDialog(null, "Escolha uma das opções:", "Manutenção de Pessoas", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, choices, null);
+        return JOptionPane.showOptionDialog(null, "Escolha uma das opções:", "", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, ACOES, null);
     }
 
-    private static void list(int classe) throws InterruptedException{
-        if(classe == 0){
-            String request = "LIST" + ";" +CLASSE_PESSOA;
+    public static void main(String[] args) throws InterruptedException {
+        boolean ok = true;
 
-            callConection(request);
-        }
-        else if(classe == 1){
-            String request = "LIST" + ";" + CLASSE_TURMA;
+        do {
 
-            callConection(request);
-        }
-    }
+            int classe = getMensagemEscolhaClasse();
 
-    private static void insert(int classe) throws InterruptedException{
-        //Se for a classe Pessoa
-        if(classe == 0){
-            inserePessoa();
-        }
-        //Se for a classe turma
-        else if(classe == 1){
-            insereTurma();
-        }
-    }
-    
-    private static void inserePessoa() throws InterruptedException{
-        String cpf      = JOptionPane.showInputDialog("Digite o CPF:");
-        String nome     = JOptionPane.showInputDialog("Digite o Nome:");
-        String endereco = JOptionPane.showInputDialog("Digite o Endereço:");
-        String turma    = JOptionPane.showInputDialog("Digite a Descricao da turma:");
-
-        String[] opTipoPessoa = {"Professor", "Aluno"};
-
-        int tipoPessoa = JOptionPane.showOptionDialog(null, "A pessoa a ser incluida e um:", "Manutenção de Pessoas", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opTipoPessoa, null);
-
-        if(tipoPessoa == 0){
-            String[] opGraduacao = {"Graduacao", "Mestrado", "Doutorado"};
-
-            int nivelGraduacao = JOptionPane.showOptionDialog(null, "Nivel de graduacao do Professor:", "Professor", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opGraduacao, null);
-
-            String request = "INSERT" + ";" + CLASSE_PESSOA + ";" +  ";" + cpf + ";" + nome + ";" + endereco + ";" + TIPO_PESSOA_PROFESSOR + ";" + nivelGraduacao + ";" + turma;
-
-            callConection(request);
-        }
-        else if(tipoPessoa == 1){
-            int matricula = Integer.parseInt(JOptionPane.showInputDialog("Digite a Matricula:"));
-
-            String request = "INSERT" + ";" + CLASSE_PESSOA + ";" + cpf + ";" + nome + ";" + endereco + ";" + TIPO_PESSOA_ALUNO + ";" + matricula + ";" + turma;
-
-            callConection(request);
-        }
-    }
-    
-    private static void insereTurma() throws InterruptedException{
-        String descricao        = JOptionPane.showInputDialog("Descricao:");
-        String quantidadeAlunos = JOptionPane.showInputDialog("Quantidade de Alunos:");
-        String ano              = JOptionPane.showInputDialog("Ano:");
-
-        String request = "INSERT" + ";" + CLASSE_TURMA + ";" + descricao + ";" + quantidadeAlunos + ";" + ano;
-
-        callConection(request);
-    }
-  
-    private static void update(int classe) throws InterruptedException{
-        if(classe == 0){
-            String cpf      = JOptionPane.showInputDialog("Digite o CPF da pessoa a ser alterada:");
-            String nome     = JOptionPane.showInputDialog("Digite o novo Nome:");
-            String endereco = JOptionPane.showInputDialog("Digite o novo Endereço:");
-
-            String request = "UPDATE" + ";" + CLASSE_PESSOA + ";" + cpf + ";" + nome + ";" + endereco;
-
-            callConection(request);
-        }
-        else if(classe == 1){
-            String turma     = JOptionPane.showInputDialog("Digite o codigo da turma a ser alterada:");
-            String descricao = JOptionPane.showInputDialog("Digite a nova descricao da Turma:");
-            String qtdAlunos = JOptionPane.showInputDialog("Digite a nova quantidade de Alunos:");
-            String ano       = JOptionPane.showInputDialog("Digite o novo ano da Turma:");
-
-            String request = "UPDATE" + ";" + CLASSE_TURMA + ";" + turma + ";" + descricao + ";" + qtdAlunos + ";" + ano;
-
-            callConection(request);
-        }
-    }
-
-    private static void delete(int classe) throws InterruptedException{
-        if(classe == 0){
-            String cpf = JOptionPane.showInputDialog("Digite o CPF:");
-
-            String request = "DELETE" + ";" + CLASSE_PESSOA + ";" + cpf;
-            
-            callConection(request);
-        }
-        else if(classe == 1){
-            String turma = JOptionPane.showInputDialog("Digite o codigo da turma:");
-
-            String request = "DELETE" + ";" + CLASSE_TURMA + ";" + turma;
-
-            callConection(request);
-        }
-    }
-
-    private static void get(int classe) throws InterruptedException{
-        if(classe == 0){
-            String cpf = JOptionPane.showInputDialog("Digite o CPF:");
-
-            String request = "GET" + ";" + CLASSE_PESSOA + ";" + cpf;
-
-            callConection(request);
-        }
-        else if(classe == 1){
-            String turma = JOptionPane.showInputDialog("Digite o codigo da turma:");
-
-            String request = "GET" + ";" + CLASSE_TURMA + ";" + turma;
-
-            callConection(request);
-        }
-    }
-
-    private static void callConection(String sentensa) throws InterruptedException{
-        try {
-            Socket cliente = new Socket("10.15.120.64", 90);
-
-            DataOutputStream output = new DataOutputStream(cliente.getOutputStream());
-            output.writeUTF(sentensa);
-
-            output.flush();
-            
-            InputStream in = cliente.getInputStream();
-
-            byte[] dadosBrutos = new byte[1024];
-
-            int qtdBytesLidos = in.read(dadosBrutos);
-
-            while (qtdBytesLidos >= 0) { // enquanto bytes forem lidos...
-                String dadosStr = new String(dadosBrutos, 0, qtdBytesLidos);
-
-                JOptionPane.showMessageDialog(null, dadosStr);
-                
-                qtdBytesLidos = in.read(dadosBrutos);
+            if(classe == BOTAO_FECHAR){
+                break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+            if(classe == CLASSE_TURMA_ALUNO){
+                Socket.conexao(TurmaAluno.insert());
+            }
+            else if (classe == CLASSE_TURMA_PRFESSOR){
+                Socket.conexao(TurmaProfessor.insert());
+            }
+            else {
+                ok = manutencaoClasse(classe);
+            }
+
+        } while (ok);
     }
+
+    private static boolean manutencaoClasse(int classe) throws InterruptedException {
+        int acao = getMensagemAcao();
+
+        switch (acao) {
+            case ACAO_CONSULTAR_TODOS: 
+                if(classe == CLASSE_PROFESSOR){
+                    Socket.conexao(Professor.list());
+                }
+                else if(classe == CLASSE_ALUNO){
+                    Socket.conexao(Aluno.list());
+                }
+                else if(classe == CLASSE_TURMA){
+                    Socket.conexao(Turma.list());
+                }
+
+                break;
+            case ACAO_VISUALIZAR: 
+                if(classe == CLASSE_PROFESSOR){
+                    Socket.conexao(Professor.get());
+                }
+                else if(classe == CLASSE_ALUNO){
+                    Socket.conexao(Aluno.get());
+                }
+                else if(classe == CLASSE_TURMA){
+                    Socket.conexao(Turma.get());
+                }
+
+                break;
+            case ACAO_EXCLUIR: 
+                if(classe == CLASSE_PROFESSOR){
+                    Socket.conexao(Professor.delete());
+                }
+                else if(classe == CLASSE_ALUNO){
+                    Socket.conexao(Aluno.delete());
+                }
+                else if(classe == CLASSE_TURMA){
+                    Socket.conexao(Turma.delete());
+                }
+
+                break;
+            case ACAO_ALTERAR: 
+                if(classe == CLASSE_PROFESSOR){
+                    Socket.conexao(Professor.update());
+                }
+                else if(classe == CLASSE_ALUNO){
+                    Socket.conexao(Aluno.update());
+                }
+                else if(classe == CLASSE_TURMA){
+                    Socket.conexao(Turma.update());
+                }
+
+                break;
+            case ACAO_INCLUIR: 
+                if(classe == CLASSE_PROFESSOR){
+                    Socket.conexao(Professor.insert());
+                }
+                else if(classe == CLASSE_ALUNO){
+                    Socket.conexao(Aluno.insert());
+                }
+                else if(classe == CLASSE_TURMA){
+                    Socket.conexao(Turma.insert());
+                }
+
+                break;
+        }
+
+        return acao != -1;
+    }
+    
 }
