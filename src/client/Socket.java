@@ -15,17 +15,17 @@ import javax.swing.JOptionPane;
  */
 public class Socket {
 
-    public static void conexao(String sentensa) throws InterruptedException{
+    public static void conexao(String request, String ip) throws InterruptedException{
         try {
-            java.net.Socket cliente = new java.net.Socket("10.15.120.64", 90);
+            java.net.Socket Servidor = new java.net.Socket(ip, 90);
 
-            DataOutputStream output = new DataOutputStream(cliente.getOutputStream());
-            output.writeUTF(sentensa);
+            DataOutputStream output = new DataOutputStream(Servidor.getOutputStream());
+            output.writeUTF(request);
 
             output.flush();
             output.close();
 
-            InputStream in = cliente.getInputStream();
+            InputStream in = Servidor.getInputStream();
 
             byte[] dadosBrutos = new byte[1024];
 
@@ -40,6 +40,17 @@ public class Socket {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static boolean conexaoIp(String ip) throws InterruptedException{
+        try (java.net.Socket Servidor = new java.net.Socket(ip, 80)) {
+            JOptionPane.showMessageDialog(null, "Conectado!");
+
+            return true;
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao se conectar, tente novamente!");
+            return false;
         }
     }
 }
