@@ -12,10 +12,8 @@ public class Turma {
 
     public static String insert() throws InterruptedException{
         String descricao     = JOptionPane.showInputDialog("Descricao:");
-        int quantidadeAlunos = Integer.parseInt(JOptionPane.showInputDialog("Quantidade de Alunos:"));
-        int ano              = Integer.parseInt(JOptionPane.showInputDialog("Ano:"));
 
-        String request = "INSERT" + ";" + _CLASSE_TURMA + ";" + descricao + ";" + quantidadeAlunos + ";" + ano;
+        String request = "INSERT" + ";" + _CLASSE_TURMA + ";" + descricao;
 
         return request;
     }
@@ -23,10 +21,8 @@ public class Turma {
     public static String update() throws InterruptedException {
         int turma        = Integer.parseInt(JOptionPane.showInputDialog("Digite o código da turma a ser alterada:"));
         String descricao = JOptionPane.showInputDialog("Digite a nova descricao da Turma:");
-        int qtdAlunos    = Integer.parseInt(JOptionPane.showInputDialog("Digite a nova quantidade de Alunos:"));
-        int ano          = Integer.parseInt(JOptionPane.showInputDialog("Digite o novo ano da Turma:"));
 
-        String request = "UPDATE" + ";" + _CLASSE_TURMA + ";" + turma + ";" + descricao + ";" + qtdAlunos + ";" + ano;
+        String request = "UPDATE" + ";" + _CLASSE_TURMA + ";" + turma + ";" + descricao;
 
         return request;
     }

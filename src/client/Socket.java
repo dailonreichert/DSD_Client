@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package client;
 
 import java.io.DataOutputStream;
@@ -17,13 +13,13 @@ public class Socket {
 
     public static void conexao(String request, String ip) throws InterruptedException{
         try {
-            java.net.Socket Servidor = new java.net.Socket(ip, 90);
+            java.net.Socket Servidor = new java.net.Socket(ip, 5560);
 
             DataOutputStream output = new DataOutputStream(Servidor.getOutputStream());
             output.writeUTF(request);
 
             output.flush();
-            output.close();
+            //output.close();
 
             InputStream in = Servidor.getInputStream();
 
@@ -44,7 +40,7 @@ public class Socket {
     }
 
     public static boolean conexaoIp(String ip) throws InterruptedException{
-        try (java.net.Socket Servidor = new java.net.Socket(ip, 80)) {
+        try (java.net.Socket Servidor = new java.net.Socket(ip, 5560)) {
             JOptionPane.showMessageDialog(null, "Conectado!");
 
             return true;
