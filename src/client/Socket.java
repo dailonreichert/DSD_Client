@@ -42,6 +42,11 @@ public class Socket {
     public static boolean conexaoIp(String ip) throws InterruptedException{
         try (java.net.Socket Servidor = new java.net.Socket(ip, 5560)) {
             JOptionPane.showMessageDialog(null, "Conectado!");
+            
+            DataOutputStream output = new DataOutputStream(Servidor.getOutputStream());
+            output.writeUTF("");
+
+            output.flush();
 
             return true;
         } catch (IOException e) {

@@ -19,7 +19,7 @@ public class Professor {
 
         int graduacao = JOptionPane.showOptionDialog(null, "Nível de graduação:", "Professor", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, NIVEL_GRADUACAO, null);
 
-        String request = "INSERT" + ";" + _CLASSE_PROFESSOR + ";" + cpf + ";" + nome + ";" + endereco + ";" + ";" + graduacao;
+        String request = "INSERT" + ";" + _CLASSE_PROFESSOR + ";" + cpf + ";" + nome + ";" + endereco + ";" + graduacao;
 
         return request;
     }
